@@ -28,6 +28,20 @@ function listen(io) {
       socket.to(room).emit("ballMove", ballData);
     });
 
+    socket.on("gameOver", (gameOverData) => {
+      if (gameOverData.isGameOver) {
+        readyPlayerCount = 0;
+      }
+      socket.to(room).emit("gameOver", gameOverData);
+    });
+
+    socket.on("playAgain", () => {
+      readyPlayerCount++;
+      if (readyPlayerCount % 2 === 0) {
+        pongNamespace.in(room).emit("playAgain");
+      }
+    });
+
     socket.on("disconnect", (reason) => {
       console.log(`Client ${socket.id} disconnected: ${reason}`);
       socket.leave(room);

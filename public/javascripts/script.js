@@ -1,6 +1,8 @@
 // Canvas Related
+const { body } = document;
 const canvas = document.createElement("canvas");
 const context = canvas.getContext("2d");
+const gameOverEl = document.createElement("div");
 const socket = io("/pong");
 let isReferee = false;
 let paddleIndex = 0;
@@ -29,6 +31,9 @@ let speedX = 0;
 
 // Score for Both Players
 let score = [0, 0];
+const winningScore = 7;
+let isGameOver = true;
+let isNewGame = true;
 
 // Create Canvas Element
 function createCanvas() {
@@ -186,6 +191,40 @@ function ballBoundaries() {
 //   }
 // }
 
+function showGameOverEl(winner) {
+  // Hide Canvas
+  canvas.hidden = true;
+  // Container
+  gameOverEl.textContent = "";
+  gameOverEl.classList.add("game-over-container");
+  // Title
+  const title = document.createElement("h1");
+  title.textContent = `${winner} Wins!`;
+  // Button
+  const playAgainBtn = document.createElement("button");
+  playAgainBtn.setAttribute("onclick", "playAgain()");
+  playAgainBtn.textContent = "Play Again";
+  // Append
+  gameOverEl.append(title, playAgainBtn);
+  body.appendChild(gameOverEl);
+}
+
+// Check If One Player Has Winning Score, If They Do, End Game
+function gameOver() {
+  if (score[0] === winningScore || score[1] === winningScore) {
+    isGameOver = true;
+
+    // Set Winner
+    const winner = score[0] === winningScore ? "Top Player" : "Bottom Player";
+    showGameOverEl(winner);
+
+    socket.emit("gameOver", {
+      isGameOver,
+      winner,
+    });
+  }
+}
+
 // Called Every Frame
 function animate() {
   // computerAI();
@@ -194,7 +233,18 @@ function animate() {
     ballBoundaries();
   }
   renderCanvas();
-  window.requestAnimationFrame(animate);
+  gameOver();
+  if (!isGameOver) {
+    window.requestAnimationFrame(animate);
+  }
+}
+
+// Play Again
+function playAgain() {
+  canvas.hidden = false;
+  body.removeChild(gameOverEl);
+  renderIntro();
+  socket.emit("playAgain");
 }
 
 // Load Game, Reset Everything
@@ -205,6 +255,11 @@ function loadGame() {
 }
 
 function startGame() {
+  isGameOver = false;
+  isNewGame = false;
+  score[0] = 0;
+  score[1] = 0;
+
   paddleIndex = isReferee ? 0 : 1; //referee controls paddle at screen bottom, other player takes top
   window.requestAnimationFrame(animate);
   canvas.addEventListener("mousemove", (e) => {
@@ -228,6 +283,7 @@ function startGame() {
 // On Load
 loadGame();
 
+//sockets
 socket.on("connect", () => {
   console.log("connected as...", socket.id);
 });
@@ -247,4 +303,12 @@ socket.on("paddleMove", (paddleData) => {
 
 socket.on("ballMove", (ballData) => {
   ({ ballX, ballY, score } = ballData);
+});
+
+socket.on("gameOver", (gameOverData) => {
+  showGameOverEl(gameOverData.winner);
+});
+
+socket.on("playAgain", () => {
+  startGame();
 });
