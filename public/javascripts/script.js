@@ -165,31 +165,11 @@ function ballBoundaries() {
       trajectoryX[1] = ballX - (paddleX[1] + paddleDiff);
       speedX = trajectoryX[1] * 0.3;
     } else {
-      // // Reset Ball, Increase Computer Difficulty, add to Player Score
-      // if (computerSpeed < 6) {
-      //   computerSpeed += 0.5;
-      // }
       ballReset();
       score[0]++;
     }
   }
 }
-
-// // Computer Movement
-// function computerAI() {
-//   if (playerMoved) {
-//     if (paddleX[1] + paddleDiff < ballX) {
-//       paddleX[1] += computerSpeed;
-//     } else {
-//       paddleX[1] -= computerSpeed;
-//     }
-//     if (paddleX[1] < 0) {
-//       paddleX[1] = 0;
-//     } else if (paddleX[1] > (width - paddleWidth)) {
-//       paddleX[1] = width - paddleWidth;
-//     }
-//   }
-// }
 
 function showGameOverEl(winner) {
   // Hide Canvas
