@@ -195,7 +195,7 @@ function gameOver() {
     isGameOver = true;
 
     // Set Winner
-    const winner = score[0] === winningScore ? "Top Player" : "Bottom Player";
+    const winner = score[0] === winningScore ? "Bottom Player" : "Top Player";
     showGameOverEl(winner);
 
     socket.emit("gameOver", {
