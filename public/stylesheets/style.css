@@ -10,6 +10,30 @@ a {
   color: #00B7FF;
 }
 
+h1 {
+  color: white;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(56, 56, 56);
+  position: absolute;
+  margin: auto;
+  height: 300px;
+  width: 250px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.game-btn {
+  margin: 1rem;
+}
+
 .game-over-container {
   position: absolute;
   top: 50%;
